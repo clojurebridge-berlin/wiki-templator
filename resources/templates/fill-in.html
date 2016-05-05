@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="ui container">
+  <form class="ui form" method="POST" action="/result">
+    {% csrf-field %}
+    <input type="hidden" name="wiki-link" value="{{wiki-link}}">
+    {% for p in placeholders %}
+    <div class="ui field">
+      <label for="{{p}}">{{p}}</label>
+      <input type="text" name="{{p}}">
+    </div>
+    {% endfor %}
+    <div class="ui field">
+      <input type="submit" class="ui button" value="Save!">
+    </div>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="ui container">
+  <h1 class="ui header">Results</h1>
+
+  <div class="ui top attached tabular menu">
+    <a class="active item" data-tab="first">Rendered</a>
+    <a class="item" data-tab="second">Markdown (for copy-pasting)</a>
+  </div>
+  <div class="ui bottom attached active tab segment" data-tab="first">
+    {{md|markdown}}
+  </div>
+  <div class="ui bottom attached tab segment" data-tab="second">
+    <div class="ui form">
+      <div class="ui field">
+        <textarea rows="120">{{md}}</textarea>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
