@@ -19,8 +19,8 @@
                 :start
                 (http/start
                   (-> env
-                      (assoc :handler (handler/app))
-                      (update :port #(or (-> env :options :port) %))))
+                        (assoc :handler (handler/app))
+                        (update :port #(or (-> env :options :port) %))))
                 :stop
                 (http/stop http-server))
 
@@ -57,4 +57,3 @@
       (System/exit 0))
     :else
     (start-app args)))
-  

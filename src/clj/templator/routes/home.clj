@@ -12,9 +12,9 @@
   (layout/render
     "home.html"))
 
-(defn fill-in-page [wiki-link placeholders]
+(defn fill-in-page [wiki-link placeholders md]
   (layout/render
-   "fill-in.html" {:wiki-link wiki-link :placeholders placeholders}))
+   "fill-in.html" {:wiki-link wiki-link :placeholders placeholders :md md}))
 
 (defn result-page [md]
   (layout/render
@@ -27,17 +27,28 @@
       :body))
 
 (defn find-placeholders [md]
-  (sort (distinct (map last (re-seq #"\{\{([^\}]*)\}\}" md)))))
+  (map #(str/split % #"\|")
+       (-> last
+           (map (re-seq #"\{\{([^\}]*)\}\}" md))
+           distinct
+           sort
+           )))
 
 
 (defroutes home-routes
   (GET "/" [] (home-page))
+  (GET "/fill-in" req
+    (str/join "<br>"
+              (map prn-str [req
+                            (:headers req)
+                            ((:headers req) "referer")])))
   (POST "/fill-in" [wiki-link]
-    (let [placeholders (-> wiki-link fetch-md find-placeholders)]
-      (fill-in-page wiki-link placeholders)))
-  (POST "/result" {{:keys [wiki-link] :as params} :params}
     (let [md (fetch-md wiki-link)
           placeholders (find-placeholders md)]
+      (fill-in-page wiki-link placeholders md)))
+  (POST "/result" {{:keys [wiki-link] :as params} :params}
+    (let [md (fetch-md wiki-link)
+          placeholders (map first (find-placeholders md))]
       (result-page
        (reduce (fn [md ph]
                  (str/replace md (str "{{" ph "}}") (get params (keyword ph))))
