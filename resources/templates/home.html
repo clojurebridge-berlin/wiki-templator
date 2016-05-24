@@ -1,24 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="ui container">
-  <h1 class="ui header">ClojureBridge Berlin Template Filler</h1>
+<div class="ui container" style="font-size: 1.3em;">
+  <h1 class="ui header">Magic Wiki Templator</h1>
 
   <p class="ui section">
-  Fill in a link to a Github wiki page. On the page you can use placeholders
-  like <tt>&#123;{fill_me_in}}</tt>. On the next page you will be asked for values to fill
-  in to these spots.
+    This app allows you to easily fill in templates kept in Github wiki pages.
+    It was written for ClojureBridge Berlin to for filling in email templates.
   </p>
 
-  <form class="ui form" method="POST" action="/fill-in">
-    {% csrf-field %}
-    <div class="ui field">
-      <label for="wiki-link">Github Wiki Page URL</label>
-      <input type="text" name="wiki-link" placeholder="https://github.com/clojurebridge-berlin/organization/wiki/Text-for-Event-on-ClojureBridge.org">
-    </div>
-    <div class="ui field">
-      <input type="submit" class="ui button" value="Save!">
-    </div>
-  </form>
+  <hr>
+
+  <p class="ui section">
+    <strong>Step 1.</strong> Create a page on a Github wiki, for example <a href="https://github.com/clojurebridge-berlin/organization/wiki/[email]-Sponsor-Mail-Recurring-Sponsor">this one</a>.
+  </p>
+
+  <p class="ui section">
+    <strong>Step 2.</strong> Use placeholders on the page, like
+    <pre>Hello &#123;{first_name}}</pre>
+    You can also provide a default value to fill in, like <pre>Thanks, &#123;{sender_name|The ClojureBridge Berlin Team}}</pre>
+  </p>
+
+  <p class="ui section">
+    <strong>Step 3.</strong> Add this snippet to the page:
+  </p>
+
+  <pre>:memo: [FILL IN THIS TEMPLATE](https://wiki-templator.herokuapp.com/fill-in) :memo:</pre>
+
+  <p class="ui section">
+    <strong>Step 4.</strong> Profit.
+  </p>
+
+
+  <hr>
+
+
+  <p class="ui section">
+    You can also just copy the URL of your wiki page in here:
+
+    <form class="ui form" method="POST" action="/fill-in">
+      {% csrf-field %}
+      <div class="ui field">
+        <label for="wiki-link">Github Wiki Page URL</label>
+        <input type="text" name="wiki-link" placeholder="https://github.com/clojurebridge-berlin/organization/wiki/Text-for-Event-on-ClojureBridge.org">
+      </div>
+      <div class="ui field">
+        <input type="submit" class="ui button" value="Save!">
+      </div>
+    </form>
+  </p>
 </div>
 
 {% endblock %}
