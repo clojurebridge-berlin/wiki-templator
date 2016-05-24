@@ -2,7 +2,8 @@
   (:require [clj-http.client :as client]
             [clojure.string :as str]
             [compojure.core :refer [defroutes GET POST]]
-            [templator.layout :as layout]))
+            [templator.layout :as layout])
+  (:import [java.util.regex Pattern]))
 
 (defn raw-md-url [wiki-url]
   (let [[scheme _ _ team repo _ page] (str/split wiki-url #"/")]
@@ -27,12 +28,11 @@
       :body))
 
 (defn find-placeholders [md]
-  (map #(str/split % #"\|")
-       (-> last
-           (map (re-seq #"\{\{([^\}]*)\}\}" md))
-           distinct
-           sort
-           )))
+  (into {} (map (fn [s] (let [[k v] (str/split s #"\|")] [k (or v "")]))
+                (-> last
+                    (map (re-seq #"\{\{([^\}]*)\}\}" md))
+                    distinct
+                    sort))))
 
 
 (defn get-fill-in [wiki-link]
@@ -52,5 +52,8 @@
     (let [placeholders (map first (find-placeholders md))]
       (result-page
        (reduce (fn [md ph]
-                 (str/replace md (java.util.regex.Pattern/compile (str "\\{\\{" ph "(|\\|[^\\}]*)" "\\}\\}")) (some #(get params %) [ph (keyword ph)])))
+                 (str/replace
+                  md
+                  (Pattern/compile (str "\\{\\{" (Pattern/quote ph) "(|\\|[^\\}]*)" "\\}\\}"))
+                  (some #(get params %) [ph (keyword ph)])))
                md placeholders)))))
