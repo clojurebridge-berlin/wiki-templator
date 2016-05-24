@@ -2,12 +2,12 @@
 {% block content %}
 
 <div class="ui container">
+  <form class="ui form" method="POST" action="/result">
   <div class="ui top attached tabular menu">
     <a class="active item" data-tab="first">Fill in the blanks</a>
     <a class="item" data-tab="second">Template</a>
   </div>
   <div class="ui bottom attached active tab segment" data-tab="first">
-    <form class="ui form" method="POST" action="/result">
       {% csrf-field %}
       <input type="hidden" name="wiki-link" value="{{wiki-link}}">
       {% for p in placeholders %}
@@ -19,11 +19,13 @@
       <div class="ui field">
         <input type="submit" class="ui button" value="Save!">
       </div>
-    </form>
   </div>
   <div class="ui bottom attached tab segment" data-tab="second">
-    {{md}}
+    <textarea rows="120" name="md">
+      {{md}}
+    </textarea>
   </div>
+  </form>
 </div>
 
 {% endblock %}

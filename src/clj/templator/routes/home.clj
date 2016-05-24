@@ -35,21 +35,22 @@
            )))
 
 
+(defn get-fill-in [wiki-link]
+  (let [md (fetch-md wiki-link)
+        placeholders (find-placeholders md)]
+    (fill-in-page wiki-link placeholders md)))
+
+
 (defroutes home-routes
   (GET "/" [] (home-page))
-  (GET "/fill-in" req
-    (str/join "<br>"
-              (map prn-str [req
-                            (:headers req)
-                            ((:headers req) "referer")])))
+  (GET "/fill-in" {{:keys [wiki-link]} :params :as req}
+    (let [wiki-link (or wiki-link ((:headers req) "referer"))]
+      (get-fill-in wiki-link)))
   (POST "/fill-in" [wiki-link]
-    (let [md (fetch-md wiki-link)
-          placeholders (find-placeholders md)]
-      (fill-in-page wiki-link placeholders md)))
-  (POST "/result" {{:keys [wiki-link] :as params} :params}
-    (let [md (fetch-md wiki-link)
-          placeholders (map first (find-placeholders md))]
+    (get-fill-in wiki-link))
+  (POST "/result" {{:keys [wiki-link md] :as params} :params}
+    (let [placeholders (map first (find-placeholders md))]
       (result-page
        (reduce (fn [md ph]
-                 (str/replace md (str "{{" ph "}}") (get params (keyword ph))))
+                 (str/replace md (java.util.regex.Pattern/compile (str "\\{\\{" ph "(|\\|[^\\}]*)" "\\}\\}")) (get params (keyword ph))))
                md placeholders)))))
