@@ -52,5 +52,5 @@
     (let [placeholders (map first (find-placeholders md))]
       (result-page
        (reduce (fn [md ph]
-                 (str/replace md (java.util.regex.Pattern/compile (str "\\{\\{" ph "(|\\|[^\\}]*)" "\\}\\}")) (get params (keyword ph))))
+                 (str/replace md (java.util.regex.Pattern/compile (str "\\{\\{" ph "(|\\|[^\\}]*)" "\\}\\}")) (some #(get params %) [ph (keyword ph)])))
                md placeholders)))))
